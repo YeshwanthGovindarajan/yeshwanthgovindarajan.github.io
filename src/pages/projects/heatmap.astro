@@ -1,5 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/nav.astro";
+import Footer from "@/components/footer.astro";
 
 const base = "/projects/heatmap";
 
@@ -127,16 +129,17 @@ const stack = [
   title="HeatMap"
   description="HeatMap is an agentic AI marketing copilot that studies local competitors' Instagram Reels and turns them into shot-by-shot video for small businesses. A case study walkthrough of one real agent run."
 >
+  <Nav />
   <!-- Back link -->
   <div class="max-w-4xl mx-auto pt-10">
     <a
-      href="/#projects"
+      href="/projects"
       class="inline-flex items-center gap-2 text-sm text-[var(--white-icon)] hover:text-white transition-colors"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
         <path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z" />
       </svg>
-      Back to portfolio
+      Back to projects
     </a>
   </div>
 
@@ -720,6 +723,7 @@ const stack = [
       <p class="mt-10 text-sm text-[var(--white-icon)]">Code available on request.</p>
     </section>
   </main>
+  <Footer />
 </Layout>
 
 <style>

@@ -1,0 +1,152 @@
+---
+import type { CatalogItem } from "@/data/catalog";
+import { portfolioCategories } from "@/data/categories";
+
+interface Props {
+  items: CatalogItem[];
+  showFilters?: boolean;
+}
+
+const { items, showFilters = true } = Astro.props;
+
+const arrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-7"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" /></svg>`;
+---
+
+<div class="portfolio-hub">
+  {
+    showFilters && (
+      <div class="flex flex-wrap gap-2 mb-8" role="tablist" aria-label="Filter by topic">
+        <button type="button" class="filter-btn is-active" data-filter="all">
+          All
+        </button>
+        {portfolioCategories.map((c) => (
+          <button type="button" class="filter-btn" data-filter={c.id}>
+            {c.short}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="portfolio-grid">
+    {
+      items.map((item: CatalogItem) => (
+        <article
+          class="portfolio-card group"
+          data-category={item.category}
+        >
+          <a
+            href={item.href}
+            {...(item.external
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
+            class="block"
+          >
+            {item.image ? (
+              <div
+                class:list={[
+                  "rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 mb-4",
+                  item.diagram ? "bg-[#f4f4f5] p-4" : "",
+                ]}
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  loading="lazy"
+                  class:list={[
+                    "w-full h-48 md:h-56 group-hover:scale-105 transition-transform duration-300",
+                    item.diagram ? "object-contain" : "object-cover",
+                  ]}
+                />
+              </div>
+            ) : (
+              <div class="rounded-2xl mb-4 h-48 md:h-56 flex flex-col items-center justify-center border border-[var(--white-icon-tr)] bg-[#1414149c] p-6 text-center">
+                <span class="text-xs text-[var(--sec)] uppercase tracking-wide mb-2">
+                  {item.kind === "research" ? "Research" : "Project"}
+                </span>
+                <span class="text-lg font-medium text-[var(--white-icon)]">
+                  {portfolioCategories.find((c) => c.id === item.category)?.short}
+                </span>
+              </div>
+            )}
+
+            <div class="flex items-start px-1 gap-3">
+              <div class="flex-grow min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <span class="text-xs uppercase tracking-wide text-[var(--sec)]">
+                    {item.kind}
+                  </span>
+                  <span class="text-xs text-[var(--white-icon)]">{item.status}</span>
+                </div>
+                <h4 class="text-xl font-semibold leading-snug">{item.title}</h4>
+                {item.highlight && (
+                  <p class="text-sm text-[var(--sec)] mt-1">{item.highlight}</p>
+                )}
+              </div>
+              <div
+                class="size-12 shrink-0 flex justify-center items-center text-[var(--white-icon)] group-hover:text-white transition border border-[var(--white-icon-tr)] rounded-xl bg-[#1414149c]"
+                set:html={arrowIcon}
+              />
+            </div>
+          </a>
+
+          <p class="px-1 mt-3 text-sm text-[var(--white-icon)] leading-relaxed">
+            {item.cardLine}
+          </p>
+
+          {item.tags && (
+            <div class="px-1 mt-3 flex flex-wrap gap-2">
+              {item.tags.map((tag: string) => (
+                <span class="text-xs text-[var(--white-icon)] border border-[var(--white-icon-tr)] bg-[#1414149c] rounded-full px-3 py-1">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </article>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .filter-btn {
+    font-size: 0.8rem;
+    color: var(--white-icon);
+    border: 1px solid var(--white-icon-tr);
+    background: #1414149c;
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+  .filter-btn:hover,
+  .filter-btn.is-active {
+    color: white;
+    border-color: var(--sec);
+    background: #1a1428;
+  }
+  .portfolio-card.is-hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>(".filter-btn");
+  const cards = document.querySelectorAll<HTMLElement>(".portfolio-card");
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const filter = btn.dataset.filter ?? "all";
+      buttons.forEach((b) => b.classList.toggle("is-active", b === btn));
+      cards.forEach((card) => {
+        const cat = card.dataset.category;
+        const show = filter === "all" || cat === filter;
+        card.classList.toggle("is-hidden", !show);
+      });
+    });
+  });
+</script>

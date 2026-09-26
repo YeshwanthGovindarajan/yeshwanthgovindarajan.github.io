@@ -1,0 +1,69 @@
+---
+import { featuredProject } from "@/data/catalog";
+
+const p = featuredProject;
+---
+
+<section id="featured" class="py-12 border-t border-[#ffffff10] text-[var(--white)]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-lg text-[var(--sec)] mb-2 shiny-sec">Featured</h2>
+    <h3 class="text-4xl md:text-5xl font-medium mb-8">HeatMap</h3>
+
+    <a href={p.href} class="group block">
+      <div class="grid md:grid-cols-[1fr_auto] gap-8 items-center rounded-2xl border border-[var(--white-icon-tr)] bg-[#14141470] p-6 md:p-8 hover:border-[#ffffff24] transition-colors">
+        <div class="space-y-4 order-2 md:order-1">
+          <p class="text-[var(--white-icon)] leading-relaxed">{p.cardLine}</p>
+          {p.highlight && (
+            <p class="text-sm text-[var(--sec)]">{p.highlight}</p>
+          )}
+          {p.tags && (
+            <div class="flex flex-wrap gap-2">
+              {p.tags.map((tag) => (
+                <span class="text-xs text-[var(--white-icon)] border border-[var(--white-icon-tr)] bg-[#1414149c] rounded-full px-3 py-1">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+          <span class="inline-flex items-center gap-2 text-sm text-white mt-2">
+            Open case study
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 group-hover:translate-x-0.5 transition-transform">
+              <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
+            </svg>
+          </span>
+        </div>
+
+        <div class="order-1 md:order-2 justify-self-center">
+          {p.videoSrc ? (
+            <video
+              class="w-[240px] md:w-[280px] rounded-2xl border border-[var(--white-icon-tr)] shadow-xl"
+              src={p.videoSrc}
+              poster={p.videoPoster}
+              muted
+              autoplay
+              loop
+              playsinline
+            />
+          ) : (
+            <img
+              src={p.image}
+              alt={p.title}
+              class="w-[240px] md:w-[280px] rounded-2xl border border-[var(--white-icon-tr)] object-cover"
+              loading="lazy"
+            />
+          )}
+        </div>
+      </div>
+    </a>
+
+    <a
+      href="/projects"
+      class="w-full flex items-center justify-center gap-2 mt-8 text-[var(--white-icon)] hover:text-white transition duration-300 ease-in-out border border-[var(--white-icon-tr)] p-3 rounded-full bg-[#1414149c] hover:bg-[var(--white-icon-tr)] hover:scale-105"
+    >
+      <span class="md:text-lg text-md">View all projects and research by topic</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+        <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
+      </svg>
+    </a>
+  </div>
+</section>

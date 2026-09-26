@@ -1,56 +1,91 @@
 ---
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+
 interface NavItem {
   label: string;
   href: string;
   icon: string;
+  /** Route prefix for active state on standalone pages. */
+  route?: string;
+  /** Section id for active state on the homepage only. */
+  section?: string;
 }
+
+const hash = (id: string) => (pathname === "/" ? `#${id}` : `/#${id}`);
 
 const navItems: NavItem[] = [
   {
     label: "Home",
-    href: "#home",
+    href: "/",
+    route: "/",
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21 20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V9.48907C3 9.18048 3.14247 8.88917 3.38606 8.69972L11.3861 2.47749C11.7472 2.19663 12.2528 2.19663 12.6139 2.47749L20.6139 8.69972C20.8575 8.88917 21 9.18048 21 9.48907V20ZM19 19V9.97815L12 4.53371L5 9.97815V19H19Z"></path></svg>`,
   },
   {
     label: "Projects",
-    href: "#projects",
+    href: "/projects",
+    route: "/projects",
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M4 5V19H20V7H11.5858L9.58579 5H4ZM12.4142 5H21C21.5523 5 22 5.44772 22 6V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H10.4142L12.4142 5Z"></path></svg>`,
   },
   {
     label: "Experience",
-    href: "#experience",
+    href: hash("experience"),
+    section: "experience",
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M20 7C20.5523 7 21 7.44772 21 8V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V8C3 7.44772 3.44772 7 4 7H8V4C8 3.44772 8.44772 3 9 3H15C15.5523 3 16 3.44772 16 4V7H20ZM10 5V7H14V5H10Z"></path></svg>`,
   },
   {
+    label: "Research",
+    href: "/research",
+    route: "/research",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 3V5H4V19H20V5H16V3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3H8ZM6 7H18V17H6V7Z"></path></svg>`,
+  },
+  {
+    label: "Patents",
+    href: "/patents",
+    route: "/patents",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2L20 7V17L12 22L4 17V7L12 2ZM12 4.311L6 8.118V15.882L12 19.689L18 15.882V8.118L12 4.311ZM12 7C13.6569 7 15 8.34315 15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7Z"></path></svg>`,
+  },
+  {
     label: "Contact",
-    href: "#contact",
+    href: hash("contact"),
+    section: "contact",
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21.7267 2.95694L16.2734 22.0432C16.1225 22.5716 15.7979 22.5956 15.5563 22.1126L11 13L1.9229 9.36919C1.41322 9.16532 1.41953 8.86022 1.95695 8.68108L21.0432 2.31901C21.5716 2.14285 21.8747 2.43866 21.7267 2.95694ZM19.0353 5.09647L6.81221 9.17085L12.4488 11.4255L15.4895 17.5068L19.0353 5.09647Z"></path></svg>`,
   },
 ];
+
+function isRouteActive(item: NavItem) {
+  if (!item.route) return false;
+  if (item.route === "/") return pathname === "/";
+  return pathname === item.route || pathname.startsWith(`${item.route}/`);
+}
 ---
 
 <div class="flex justify-center w-full">
   <nav
     id="main-nav"
-    class="fixed left-1/2 -translate-x-1/2 z-[100] bg-[var(--background)] border border-1 border-transparent backdrop-blur-xl transition-all duration-500 ease-in-out md:top-6 md:bottom-auto bottom-0 w-[80%]"
+    class="fixed left-1/2 -translate-x-1/2 z-[100] bg-[var(--background)] border border-1 border-transparent backdrop-blur-xl transition-all duration-500 ease-in-out md:top-6 md:bottom-auto bottom-0 w-[92%] md:w-[80%]"
   >
-    <div class="container mx-auto flex justify-center items-center p-3">
+    <div class="container mx-auto flex justify-center items-center p-2 md:p-3">
       <ul
-        class="flex w-full justify-between md:space-x-6 md:justify-center md:gap-12 gap-6"
+        class="flex w-full justify-between md:justify-center md:gap-6 lg:gap-8 gap-1"
       >
         {
           navItems.map((item) => (
-            <li class="flex-1 md:flex-none">
+            <li class="flex-1 md:flex-none min-w-0">
               <a
                 href={item.href}
-                class="flex flex-col items-center gap-1 text-[var(--white-icon)] transition-colors text-xs md:text-base relative group"
+                data-route={item.route ?? ""}
+                data-section={item.section ?? ""}
+                class:list={[
+                  "flex flex-col items-center gap-0.5 text-[var(--white-icon)] transition-colors text-[10px] md:text-sm relative group nav-link",
+                  isRouteActive(item) && "nav-route-active",
+                ]}
               >
                 <div class="absolute -left-6 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full transition-all duration-300 scale-0 opacity-0 bg-[#A9FF5B] nav-indicator hidden md:block" />
-                <span class="md:hidden flex items-center justify-center w-6 h-6">
+                <span class="md:hidden flex items-center justify-center w-5 h-5">
                   <fragment set:html={item.icon} />
                 </span>
                 <span class="hidden md:inline-block">{item.label}</span>
-                <span class="md:hidden">{item.label}</span>
+                <span class="md:hidden truncate max-w-[3.2rem]">{item.label}</span>
               </a>
             </li>
           ))
@@ -59,6 +94,7 @@ const navItems: NavItem[] = [
     </div>
   </nav>
 </div>
+
 <style>
   nav {
     transform: translateX(-50%);
@@ -75,12 +111,14 @@ const navItems: NavItem[] = [
     border-radius: 9999px;
   }
 
-  nav a.active .nav-indicator {
+  nav a.active .nav-indicator,
+  nav a.nav-route-active .nav-indicator {
     transform: translateY(-50%) scale(1);
     opacity: 1;
   }
 
-  nav a.active {
+  nav a.active,
+  nav a.nav-route-active {
     color: white !important;
   }
 
@@ -110,6 +148,7 @@ const navItems: NavItem[] = [
   const nav = document.getElementById("main-nav");
   const maxScroll = 1000;
   let rafId: number | null = null;
+  const onHome = window.location.pathname === "/" || window.location.pathname === "/index.html";
 
   function updateNav() {
     if (window.scrollY > 0) {
@@ -118,8 +157,8 @@ const navItems: NavItem[] = [
       const scrollProgress = Math.min(window.scrollY / maxScroll, 1);
       const easeProgress = 1 - Math.pow(1 - scrollProgress, 4);
 
-      const minWidth = 528;
-      const maxWidth = window.innerWidth * 0.8;
+      const minWidth = 640;
+      const maxWidth = window.innerWidth * 0.92;
       const currentWidth = maxWidth - (maxWidth - minWidth) * easeProgress;
 
       if (window.innerWidth >= 768) {
@@ -127,7 +166,7 @@ const navItems: NavItem[] = [
       }
     } else {
       nav?.classList.remove("scrolling");
-      nav?.style.setProperty("width", "80%");
+      nav?.style.setProperty("width", window.innerWidth >= 768 ? "80%" : "92%");
     }
     rafId = null;
   }
@@ -142,54 +181,39 @@ const navItems: NavItem[] = [
     { passive: true }
   );
 
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+  document.querySelectorAll<HTMLAnchorElement>(".nav-link").forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
+      const href = anchor.getAttribute("href") ?? "";
+      if (!href.startsWith("#")) return;
       e.preventDefault();
-      const target = e.currentTarget as HTMLAnchorElement;
-      const targetId = target.getAttribute("href")?.substring(1) || "";
+      const targetId = href.substring(1);
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: "smooth",
-        });
+        targetElement.scrollIntoView({ behavior: "smooth" });
       }
     });
   });
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const sections = document.querySelectorAll("section[id]");
-    const navLinks = document.querySelectorAll("nav a[href^='#']");
-    const observerOptions = { threshold: 0.6 };
-
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          navLinks.forEach((link) => link.classList.remove("active"));
-          const id = entry.target.getAttribute("id");
-          const activeLink = document.querySelector(`nav a[href="#${id}"]`);
-          if (activeLink) {
-            activeLink.classList.add("active");
-          }
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions
-    );
-    sections.forEach((section) => observer.observe(section));
-  });
+  if (onHome) {
+    document.addEventListener("DOMContentLoaded", () => {
+      const sections = document.querySelectorAll("section[id]");
+      const navLinks = document.querySelectorAll<HTMLAnchorElement>(".nav-link[data-section]");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              navLinks.forEach((link) => link.classList.remove("active"));
+              const id = entry.target.getAttribute("id");
+              const activeLink = document.querySelector(
+                `.nav-link[data-section="${id}"]`
+              );
+              activeLink?.classList.add("active");
+            }
+          });
+        },
+        { threshold: 0.45 }
+      );
+      sections.forEach((section) => observer.observe(section));
+    });
+  }
 </script>
-
-<style>
-  @media (max-width: 767px) {
-    body {
-      padding-bottom: 70px;
-    }
-  }
-
-  nav a.active {
-    color: white !important;
-  }
-</style>

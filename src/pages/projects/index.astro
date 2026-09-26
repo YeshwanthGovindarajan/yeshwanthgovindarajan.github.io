@@ -1,0 +1,33 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/nav.astro";
+import Footer from "@/components/footer.astro";
+import PortfolioGrid from "@/components/portfolio-grid.astro";
+import { catalogItems } from "@/data/catalog";
+import { portfolioCategories } from "@/data/categories";
+---
+
+<Layout
+  title="Projects"
+  description="Projects and applied research by topic: multimodal representation learning, recommendation systems, and agentic AI."
+>
+  <Nav />
+
+  <header class="max-w-5xl mx-auto pt-12 md:pt-16 pb-8 text-[var(--white)] px-0">
+    <p class="text-lg text-[var(--sec)] mb-2 shiny-sec">Browse by topic</p>
+    <h1 class="text-4xl md:text-5xl font-medium mb-4">Projects</h1>
+    <p class="text-[var(--white-icon)] max-w-2xl leading-relaxed">
+      Engineering work and published research grouped for recruiters and
+      collaborators. Use the filters for{" "}
+      {portfolioCategories.map((c) => c.short.toLowerCase()).join(", ")}.
+      Patents are listed separately under{" "}
+      <a href="/patents" class="text-[var(--sec)] hover:underline">Patents</a>.
+    </p>
+  </header>
+
+  <main class="max-w-5xl mx-auto pb-24 text-[var(--white)]">
+    <PortfolioGrid items={catalogItems} showFilters={true} />
+  </main>
+
+  <Footer />
+</Layout>

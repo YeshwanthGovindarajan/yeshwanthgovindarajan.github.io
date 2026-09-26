@@ -1,0 +1,73 @@
+---
+import type { ResearchItem } from "@/data/research";
+
+interface Props {
+  items: ResearchItem[];
+}
+
+const { items } = Astro.props;
+
+const statusColor = (status: string) => {
+  const s = status.toLowerCase();
+  if (s.includes("published")) return "var(--sec)";
+  if (s.includes("review")) return "#f5a623";
+  if (s.includes("filed")) return "#7ea6ff";
+  return "var(--white-icon)";
+};
+---
+
+<div class="rounded-2xl border border-[var(--white-icon-tr)] overflow-hidden">
+  {
+    items.map((item: ResearchItem, idx: number) => {
+      const href = item.slug
+        ? `/research/${item.slug}`
+        : item.links?.[0]?.href;
+      const external = !item.slug && Boolean(href);
+      const rowClass =
+        "flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 md:p-5 transition-colors hover:bg-[#ffffff08]" +
+        (idx > 0 ? " border-t border-[var(--white-icon-tr)]" : "");
+      const inner = (
+        <>
+          <div class="flex-grow min-w-0">
+            <h3 class="font-medium leading-snug">{item.title}</h3>
+            <p class="text-sm text-[var(--white-icon)] mt-1">
+              {item.venue} · {item.year}
+            </p>
+            {item.summary && (
+              <p class="text-sm text-[var(--white-icon)] mt-1 opacity-80">
+                {item.summary}
+              </p>
+            )}
+          </div>
+          <div class="flex items-center gap-3 sm:flex-col sm:items-end shrink-0">
+            <span
+              class="text-xs border rounded-full px-3 py-1 whitespace-nowrap"
+              style={`color:${statusColor(item.status)};border-color:${statusColor(item.status)}55;`}
+            >
+              {item.status}
+            </span>
+            {href && (
+              <span class="text-sm text-[var(--white-icon)] group-hover:text-white inline-flex items-center gap-1">
+                {item.slug ? "View" : "Paper"}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                  <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
+                </svg>
+              </span>
+            )}
+          </div>
+        </>
+      );
+      return href ? (
+        <a
+          href={href}
+          class={"group " + rowClass}
+          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        >
+          {inner}
+        </a>
+      ) : (
+        <div class={rowClass}>{inner}</div>
+      );
+    })
+  }
+</div>

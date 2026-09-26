@@ -1,0 +1,30 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/nav.astro";
+import Footer from "@/components/footer.astro";
+import ResearchRows from "@/components/research-rows.astro";
+import { patentItems } from "@/data/research";
+---
+
+<Layout
+  title="Patents"
+  description="Patent applications and published patents by Yeshwanth Govindarajan."
+>
+  <Nav />
+
+  <header class="max-w-4xl mx-auto pt-12 md:pt-16 pb-8 text-[var(--white)]">
+    <p class="text-lg text-[var(--sec)] mb-2 shiny-sec">Intellectual property</p>
+    <h1 class="text-4xl md:text-5xl font-medium mb-4">Patents</h1>
+    <p class="text-[var(--white-icon)] max-w-2xl leading-relaxed">
+      Indian patent applications with detail pages where figures and flows are
+      available. Application numbers are shown on each page; open a row to read
+      the full write-up.
+    </p>
+  </header>
+
+  <main class="max-w-4xl mx-auto pb-24 text-[var(--white)]">
+    <ResearchRows items={patentItems} />
+  </main>
+
+  <Footer />
+</Layout>

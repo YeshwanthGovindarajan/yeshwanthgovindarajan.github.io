@@ -349,3 +349,10 @@ export const groupOrder: { key: ResearchGroup; label: string }[] = [
   { key: "patent", label: "Patents" },
   { key: "manuscript", label: "Manuscripts" },
 ];
+
+/** Papers and manuscripts only (no patents). */
+export const scholarlyItems = researchItems.filter((item) => item.group !== "patent");
+
+export const patentItems = researchItems.filter((item) => item.group === "patent");
+
+export const scholarlyGroupOrder = groupOrder.filter((g) => g.key !== "patent");
