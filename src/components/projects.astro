@@ -28,12 +28,20 @@ const githubIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
                   : { target: "_blank", rel: "noopener noreferrer" })}
                 class="block"
               >
-                <div class="rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 mb-4">
+                <div
+                  class:list={[
+                    "rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 mb-4",
+                    project.diagram ? "bg-[#f4f4f5] p-4" : "",
+                  ]}
+                >
                   <img
                     src={project.image}
                     alt={project.title}
                     loading="lazy"
-                    class="w-full h-48 md:h-72 object-cover group-hover:scale-105 transition-transform duration-300"
+                    class:list={[
+                      "w-full h-48 md:h-72 group-hover:scale-105 transition-transform duration-300",
+                      project.diagram ? "object-contain" : "object-cover",
+                    ]}
                   />
                 </div>
                 <div class="flex items-center px-3">
@@ -87,5 +95,20 @@ const githubIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
         })
       }
     </div>
+
+    <a
+      href="/research"
+      class="w-full flex items-center justify-center gap-2 mt-10 text-[var(--white-icon)] hover:text-white transition duration-300 ease-in-out border border-[var(--white-icon-tr)] p-3 rounded-full bg-[#1414149c] hover:bg-[var(--white-icon-tr)] hover:scale-105"
+    >
+      <span class="md:text-lg text-md">See all research and patents</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        class="size-5"
+      >
+        <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
+      </svg>
+    </a>
   </div>
 </section>

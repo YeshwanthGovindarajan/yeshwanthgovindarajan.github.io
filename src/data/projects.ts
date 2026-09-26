@@ -12,6 +12,8 @@ export interface Project {
   repo?: string;
   /** External live preview link. */
   preview?: string;
+  /** Render a white-background diagram on a light panel, contained not cropped. */
+  diagram?: boolean;
 }
 
 export const projects: Project[] = [
@@ -25,24 +27,32 @@ export const projects: Project[] = [
     caseStudy: "/projects/heatmap",
   },
   {
-    title: "Project Two",
-    image: "https://placehold.co/600x400/1a1a1a/ffffff?text=Project+Two",
-    status: "On Development",
-    repo: "https://github.com",
-    preview: "https://example.com",
+    title: "Multi-modal Biometric Authentication",
+    image: "/projects/multimodal-biometric-auth/architecture.webp",
+    status: "Published, IEEE Access",
+    cardLine:
+      "Face, voice, and signature fused into one authentication model at 94.65% accuracy.",
+    tags: ["Multimodal", "CNNs + RNNs", "Biometrics"],
+    caseStudy: "/research/multimodal-biometric-auth",
+    diagram: true,
   },
   {
-    title: "Project Three",
-    image: "https://placehold.co/600x400/1a1a1a/ffffff?text=Project+Three",
-    status: "Contributor",
-    repo: "https://github.com",
-    preview: "https://example.com",
+    title: "Secure Federated Learning for IIoT",
+    image: "/projects/sfl-federated-learning-iiot/architecture.webp",
+    status: "Published, IEEE Access",
+    cardLine:
+      "Federated learning that rejects poisoned updates with a digital twin and blocks fake clients with NFTs.",
+    tags: ["Federated learning", "Blockchain", "Security"],
+    caseStudy: "/research/sfl-federated-learning-iiot",
+    diagram: true,
   },
   {
-    title: "Project Four",
-    image: "https://placehold.co/600x400/1a1a1a/ffffff?text=Project+Four",
-    status: "Deployed",
-    repo: "https://github.com",
-    preview: "https://example.com",
+    title: "Findify, AI Lost-and-Found",
+    image: "/projects/lost-and-found-patent/findify-homepage.webp",
+    status: "Patent published",
+    cardLine:
+      "A patented lost-and-found system that uses AI captioning to make found items searchable.",
+    tags: ["Patent", "BLIP captioning", "Web app"],
+    caseStudy: "/research/lost-and-found-patent",
   },
 ];
