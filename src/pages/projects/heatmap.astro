@@ -1,0 +1,1120 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+const base = "/projects/heatmap";
+
+// Step 1: the input script
+const shots = [
+  { time: "0-3s", beat: "Hook", need: "Extreme close-up, noodles lifted out of a steaming curry bowl" },
+  { time: "3-6s", beat: "Context", need: "Wide interior, digital ordering screens, counter with to-go packaging" },
+  { time: "6-9s", beat: "Product", need: "Overhead, boat noodles and crispy tonkatsu, lime and chili" },
+  { time: "9-12s", beat: "Social proof", need: "Team member plating a bowl behind the counter, one spoken line" },
+  { time: "12-15s", beat: "CTA", need: "Hands picking up a branded to-go bag, signage behind" },
+];
+
+// Step 2 / 3: retrieval candidates for shot 1, in display order
+const retrieval = [
+  { src: `${base}/s2-retrieval-shot1-cand1-0.302.jpg`, score: "0.302", locked: false, warn: true },
+  { src: `${base}/s2-retrieval-shot1-cand3-0.297.jpg`, score: "0.297", locked: false, warn: true },
+  { src: `${base}/s2-retrieval-shot1-cand5-0.296.jpg`, score: "0.296", locked: false, warn: false },
+  { src: `${base}/s2-retrieval-shot1-cand0-0.271.jpg`, score: "0.271", locked: false, warn: false },
+  { src: `${base}/s2-retrieval-shot1-cand2-0.254.jpg`, score: "0.254", locked: false, warn: false },
+  { src: `${base}/s2-retrieval-shot1-cand4-0.252.jpg`, score: "0.252", locked: true, warn: false },
+];
+const anchorPhrases = ["steaming curry bowl", "Thai noodle soup bowl", "rice noodles in broth"];
+
+// Step 5: no-match grid for shot 4
+const nomatch = [
+  { src: `${base}/s5-shot4-nomatch-cand0-0.271.jpg`, score: "0.271" },
+  { src: `${base}/s5-shot4-nomatch-cand1-0.263.jpg`, score: "0.263" },
+  { src: `${base}/s5-shot4-nomatch-cand2-0.264.jpg`, score: "0.264" },
+  { src: `${base}/s5-shot4-nomatch-cand3-0.229.jpg`, score: "0.229" },
+  { src: `${base}/s5-shot4-nomatch-cand4-0.258.jpg`, score: "0.258" },
+  { src: `${base}/s5-shot4-nomatch-cand5-0.271.jpg`, score: "0.271" },
+];
+
+// Step 6: checkpoint 1 review
+const checkpoint = [
+  { src: `${base}/s6-cp1-shot1.jpg`, shot: "Hook", score: 8, bar: 8, pass: true, result: "pass", issue: "Fork used instead of chopsticks" },
+  { src: `${base}/s6-cp1-shot2.jpg`, shot: "Context", score: 7, bar: 6, pass: true, result: "pass", issue: "Missing digital ordering screens and fresh ingredients" },
+  { src: `${base}/s6-cp1-shot3.jpg`, shot: "Product", score: 6, bar: 8, pass: false, result: "fail", issue: "Missing tonkatsu and lime wedge" },
+  { src: `${base}/s6-cp1-shot5.jpg`, shot: "CTA", score: 5, bar: 6, pass: false, result: "fail, wrong category", issue: "No to-go bag or Grapow signage visible" },
+];
+
+// Step 7: rewritten search phrases
+const rewrittenPhrases = [
+  "Overhead view of boat noodles with glossy broth and a crispy tonkatsu cutlet on a plate, lime wedge and chili flakes being sprinkled",
+  "Top-down shot of Thai boat noodles next to a golden-brown tonkatsu with lime and chili flakes",
+  "Brightly lit overhead image of a bowl of noodles with broth and a plate of crispy tonkatsu, lime wedge and chili flakes visible",
+];
+
+// Step 8: locked reference filmstrip
+const references = [
+  { src: `${base}/ref-image1-hook.jpg`, label: "Image1", note: "Hook" },
+  { src: `${base}/ref-image2-context.jpg`, label: "Image2", note: "Context" },
+  { src: `${base}/ref-image3-product.jpg`, label: "Image3", note: "Product" },
+  { src: `${base}/ref-image4-environment.jpg`, label: "Image4", note: "Environment only" },
+  { src: `${base}/ref-image5-cta.jpg`, label: "Image5", note: "Lighting only" },
+];
+
+const finalPrompt = `A connected 15-second vertical Reel for Grapow Thai, five shots cut together into one continuous sequence with a fast, energetic quick-service pace.
+
+0-3s, HOOK: Use @Image1 as reference for bowl styling, steam, and warm overhead lighting, but replace the fork shown in it with chopsticks. Extreme close-up, static macro, shallow depth of field, on a steaming red curry broth bowl. Chopsticks lift a tangle of glistening rice noodles straight up out of the broth, steam curling into frame as strands stretch and separate. On-screen text, bold white sans-serif with a subtle drop shadow: "This is what lunch should taste like." Match cut into the next shot.
+
+3-6s, CONTEXT: Use @Image2 as reference for the interior's color palette, mural, and warm pendant lighting. Wide interior shot, camera slowly pushing in from the entrance on stabilized handheld. A glowing digital ordering screen sits near the counter, fresh ingredients and to-go packaging lined along its edge, the same saturated blue, yellow, and pink mural in the background. Warm pendant light mixes with cool screen glow. Crossfade into the next shot.
+
+6-9s, PRODUCT SHOWCASE: Use @Image3 as the direct reference for the dish, plating, and lighting. Static top-down overhead shot, bright even lighting, on this plated bowl of boat noodles and crispy tonkatsu. Glossy amber-orange curry broth pools around golden crispy-fried cutlet and a nest of crunchy noodles, lime wedge and herbs at the edge. A hand enters frame to sprinkle chili flakes and squeeze lime over the top. On-screen text: "Curry bowls. Noodles. Tonkatsu." Hard cut into the next shot.
+
+9-12s, SOCIAL PROOF: Use @Image4 as environment and lighting reference only, the same counter setting with digital menu screens glowing behind. A team member stands behind the counter plating a fresh curry bowl, glancing up with a confident smile as steam rises off the dish, soft fill light from the screens behind them. They say: "Everything's made fresh, grab a bowl and you're good to go." A slightly slower beat than the shots before it. Hard cut into the final shot.
+
+12-15s, CTA: Use @Image5 only for its warm ambient lighting tone, not its content. Close-up, static shot, rack focus pulling from a branded to-go bag in the foreground to soft-focused storefront signage and neon accents behind it. A pair of hands lifts the paper to-go bag off the counter, branding briefly legible before the background resolves out of focus. On-screen text: "Study spot + street food fix." Snappy, quick close to end the sequence.
+
+Overall grade: vibrant, saturated color, punchy reds and greens on the food shots, cleaner modern tones on the interior shots. Brand tone throughout: a modern quick-service Thai street food spot built for a young, casual, student crowd.`;
+
+const platformSteps = [
+  { title: "Brand ingestion", sub: "scrape own reels" },
+  { title: "Competitor discovery", sub: "Google Places + site crawl" },
+  { title: "Vision analysis", sub: "frame-level reel analysis" },
+  { title: "Idea generation", sub: "evidence-backed idea buckets" },
+  { title: "Script chat", sub: "staged LLM script pipeline" },
+  { title: "Video agent", sub: "retrieve, judge, review, generate" },
+];
+
+const platformNotes = [
+  { name: "Brand ingestion", body: "Scrapes the brand's own reels (Apify), analyzes frames with a vision model (Qwen3-VL-Flash), and writes a Brand DNA profile (GPT-4o)." },
+  { name: "Competitor discovery", body: "Finds real nearby competitors with Google Places, extracts their Instagram handles with headless Chrome, and profiles them." },
+  { name: "Vision analysis", body: "Pulls competitor reels and analyzes the top ones frame by frame." },
+  { name: "Idea generation", body: "Produces three buckets of ideas, each tied to the competitor evidence that supports it." },
+  { name: "Script chat", body: "The user refines an idea in chat, and a staged pipeline (spec, patterns, draft, validate, repair with up to 3 retries) outputs a shot-by-shot script." },
+  { name: "Video agent", body: "Turns that script into a video. This is the part the rest of the page opens up." },
+];
+
+const components = [
+  { layer: "Orchestrator", what: "A vision-capable GPT-4o agent that makes the judgment calls (triage, reuse, steer, backtrack) but delegates the heavy lifting", code: "orchestrator.py" },
+  { layer: "Deterministic flows", what: "Retrieval and judging, masking, composition, generation", code: "flows.py" },
+  { layer: "Atomic tools", what: "15 single-purpose tools, e.g. retrieval planner, judge, reusability check, face masker, coherence reviewer, batch planner", code: "tools/" },
+  { layer: "State", what: "One typed state object with a per-shot attempt ledger", code: "models.py" },
+  { layer: "Graph", what: "LangGraph state machine with human-in-the-loop interrupt", code: "graph.py" },
+  { layer: "Observability", what: "Every retrieval, frame, LLM request and response saved per run, plus a live Streamlit activity feed", code: "audit.py, app.py" },
+];
+
+const decisions = [
+  { title: "Scores never reach the judge", body: "The vision judge sees images and the shot spec only, so embedding similarity cannot bias it. Step 3 shows why." },
+  { title: "Two vision checkpoints", body: "Per-frame judging catches wrong images, a whole-set review catches wrong combinations, and a final replication review can hard-fail the run before any money is spent on generation." },
+  { title: "Bounded autonomy", body: "At most 3 attempts per shot, 2 upload rounds, and 10 orchestrator iterations, so cost and latency have a ceiling." },
+  { title: "Degrade, do not crash", body: "Missing shots after the upload budget produce a partial video instead of an error." },
+  { title: "Script beats reference", body: "A conflict rule in the prompt composer keeps retrieved footage from overriding what the script asked for." },
+  { title: "Everything is auditable", body: "Each run writes a numbered folder of every decision, which is what made this case study possible after the servers were shut down." },
+];
+
+const production = [
+  "React + TypeScript frontend served by nginx, FastAPI backend",
+  "Redis with RQ workers on three priority queues for scraping, analysis, and generation jobs",
+  "Supabase (Postgres and auth), S3 for brand artifacts",
+  "Kubernetes on AWS (kOps), Helm releases, ALB ingress, images in ECR",
+  "Pinecone frame index, TopView API for video generation, ffmpeg for stitching",
+  "Stripe billing with free, pro, and pro-plus-video tiers and per-plan AI token budgets",
+];
+
+const stack = [
+  "Python", "FastAPI", "LangGraph", "OpenAI GPT-4o", "CLIP", "Pinecone", "Qwen3-VL",
+  "OpenCV", "Seedance", "React", "TypeScript", "Redis / RQ", "Supabase", "S3",
+  "Docker", "Kubernetes", "Helm", "AWS",
+];
+---
+
+<Layout
+  title="HeatMap"
+  description="HeatMap is an agentic AI marketing copilot that studies local competitors' Instagram Reels and turns them into shot-by-shot video for small businesses. A case study walkthrough of one real agent run."
+>
+  <!-- Back link -->
+  <div class="max-w-4xl mx-auto pt-10">
+    <a
+      href="/#projects"
+      class="inline-flex items-center gap-2 text-sm text-[var(--white-icon)] hover:text-white transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+        <path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z" />
+      </svg>
+      Back to portfolio
+    </a>
+  </div>
+
+  <!-- 1. HERO -->
+  <header class="max-w-4xl mx-auto pt-10 pb-12 text-[var(--white)]">
+    <div class="grid md:grid-cols-[1fr_auto] gap-10 items-start">
+      <div class="space-y-6">
+        <p class="text-lg text-[var(--sec)] shiny-sec">Case study</p>
+        <h1 class="text-5xl md:text-6xl font-medium leading-none">HeatMap</h1>
+        <p class="text-lg md:text-xl text-[var(--white-icon)] leading-relaxed">
+          An agentic AI marketing copilot that studies what works in local
+          competitors' Instagram Reels and turns it into shot-by-shot video for
+          small businesses.
+        </p>
+
+        <div class="flex flex-wrap gap-2">
+          {["Co-Founder and Forward Deployed Engineer", "Dec 2025 to 2026", "Full stack, AI, infra"].map((chip) => (
+            <span class="text-xs text-[var(--white-icon)] border border-[var(--white-icon-tr)] bg-[#1414149c] rounded-full px-3 py-1">
+              {chip}
+            </span>
+          ))}
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+          {[
+            { big: "40", small: "users" },
+            { big: "~50 hrs", small: "saved per business" },
+            { big: "5-shot", small: "reel, 15 seconds" },
+          ].map((stat) => (
+            <div class="border border-[var(--white-icon-tr)] bg-[#1414149c] rounded-2xl px-5 py-3">
+              <div class="text-2xl font-semibold">{stat.big}</div>
+              <div class="text-xs text-[var(--white-icon)]">{stat.small}</div>
+            </div>
+          ))}
+        </div>
+
+        <p class="text-sm text-[var(--white-icon)] leading-relaxed border-l-2 border-[var(--white-icon-tr)] pl-4">
+          Served 40 users from Dec 2025 to Mar 2026, now offline. The v2 video
+          agent shown below is a prototype, run in inspect mode.
+        </p>
+      </div>
+
+      <div class="justify-self-center">
+        <video
+          class="w-[260px] md:w-[300px] rounded-2xl border border-[var(--white-icon-tr)] shadow-xl"
+          src={`${base}/final-video.mp4`}
+          poster={`${base}/hero.jpg`}
+          muted
+          autoplay
+          loop
+          playsinline
+          controls
+        ></video>
+        <p class="mt-2 text-center text-xs text-[var(--white-icon)]">The finished 15 second reel</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto text-[var(--white)] space-y-20 pb-24">
+    <!-- 2. THE PROBLEM -->
+    <section>
+      <h2 class="section-kicker">The problem</h2>
+      <p class="text-xl md:text-2xl leading-relaxed text-[var(--white)]">
+        Local restaurants and shops know Reels drive foot traffic but have no
+        video team and no time to study what their competitors post. Generic AI
+        video tools produce content that looks nothing like the brand or the
+        neighborhood. HeatMap grounds every idea and every shot in evidence from
+        real, local, high-performing reels.
+      </p>
+    </section>
+
+    <!-- 3. THE PLATFORM -->
+    <section>
+      <h2 class="section-kicker">The platform</h2>
+      <p class="text-[var(--white-icon)] mb-8 max-w-2xl">
+        Six stages take a business from its own content all the way to a
+        finished, evidence-backed video.
+      </p>
+
+      <div class="flow-row">
+        {platformSteps.map((node, i) => (
+          <>
+            <div class="flow-node">
+              <div class="font-medium text-sm">{node.title}</div>
+              <div class="text-xs text-[var(--white-icon)] mt-1">{node.sub}</div>
+            </div>
+            {i < platformSteps.length - 1 && <div class="flow-arrow" aria-hidden="true">&rarr;</div>}
+          </>
+        ))}
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-x-8 gap-y-4 mt-10">
+        {platformNotes.map((note) => (
+          <p class="text-sm text-[var(--white-icon)] leading-relaxed">
+            <span class="text-[var(--white)] font-medium">{note.name}.</span> {note.body}
+          </p>
+        ))}
+      </div>
+    </section>
+
+    <!-- 4. INSIDE THE VIDEO AGENT -->
+    <section>
+      <h2 class="section-kicker">Inside the video agent</h2>
+      <p class="text-[var(--white-icon)] max-w-2xl mb-12">
+        Below is one real run of the agent for a Pittsburgh Thai quick-service
+        restaurant, Grapow Thai. Every image is an artifact the agent saved
+        during the run.
+      </p>
+
+      <div class="stepper">
+        <!-- STEP 1 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">01</span>
+            <div>
+              <h3 class="step-title">The input: a 5-shot script</h3>
+              <p class="step-sub">What the agent was asked to build</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="overflow-x-auto rounded-xl border border-[var(--white-icon-tr)]">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-left text-[var(--white-icon)]">
+                    <th class="p-3 font-medium">Time</th>
+                    <th class="p-3 font-medium">Beat</th>
+                    <th class="p-3 font-medium">What the shot needs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {shots.map((s) => (
+                    <tr class="border-t border-[var(--white-icon-tr)]">
+                      <td class="p-3 whitespace-nowrap text-[var(--sec)]">{s.time}</td>
+                      <td class="p-3 whitespace-nowrap">{s.beat}</td>
+                      <td class="p-3 text-[var(--white-icon)]">{s.need}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p class="step-copy">
+              The script comes from the chat step. Each shot carries a content
+              type (food hero, environment, person action), camera notes, and two
+              or three visual anchor phrases the agent can search with.
+            </p>
+            <details class="disclosure">
+              <summary>Brand DNA used for this run</summary>
+              <p>
+                Grapow Thai is a quick-service restaurant that specializes in
+                Asian street food, particularly Thai cuisine. Audience is young
+                adults and students aged 18 to 35 looking for quick, casual dining
+                or a place to study.
+              </p>
+            </details>
+          </div>
+        </article>
+
+        <!-- STEP 2 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">02</span>
+            <div>
+              <h3 class="step-title">Retrieval: search real footage, not stock</h3>
+              <p class="step-sub">Top 6 candidates for the hook shot</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="flex flex-wrap gap-2 mb-4">
+              {anchorPhrases.map((p) => (
+                <span class="pill">{p}</span>
+              ))}
+            </div>
+            <div class="cand-grid">
+              {retrieval.map((c) => (
+                <figure class:list={["cand", { "cand--locked": c.locked, "cand--dim": !c.locked }]}>
+                  <img src={c.src} alt={`Retrieved candidate scoring ${c.score}`} loading="lazy" />
+                  <span class="cand-score">{c.score}</span>
+                  {c.locked && <span class="cand-badge">LOCKED</span>}
+                </figure>
+              ))}
+            </div>
+            <p class="step-copy">
+              Every frame of every scraped local reel is embedded with CLIP
+              (ViT-L/14) and stored in Pinecone. For each shot the agent searches
+              with each anchor phrase, merges the hits with reciprocal rank
+              fusion, drops anything under a similarity gate, and keeps the top 6.
+            </p>
+          </div>
+        </article>
+
+        <!-- STEP 3 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">03</span>
+            <div>
+              <h3 class="step-title">The vision judge: similarity is not relevance</h3>
+              <p class="step-sub">The highest scores were the wrong images</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="cand-grid">
+              {retrieval.map((c) => (
+                <figure
+                  class:list={[
+                    "cand",
+                    { "cand--locked": c.locked, "cand--warn": c.warn, "cand--dim": !c.locked && !c.warn },
+                  ]}
+                >
+                  <img src={c.src} alt={`Candidate scoring ${c.score}`} loading="lazy" />
+                  <span class="cand-score">{c.score}</span>
+                  {c.locked && <span class="cand-badge">LOCKED</span>}
+                  {c.warn && <span class="cand-badge cand-badge--warn">kiosk photo</span>}
+                </figure>
+              ))}
+            </div>
+            <p class="step-copy">
+              The two highest-scoring frames are photos of an ordering kiosk that
+              happens to display a picture of a curry bowl. Embedding search loved
+              them. A GPT-4o vision judge looks at the actual images against the
+              shot description, and it is never shown the similarity scores, so it
+              cannot be anchored by them. It picked the lowest-scoring candidate,
+              the only one that is really a noodle pull.
+            </p>
+            <blockquote class="callout">
+              <span class="callout-label">What the agent decided</span>
+              "This image closely matches the description with rice noodles being
+              lifted, visible broth, and herbs, fitting the food hero context."
+              Verdict good_fit.
+            </blockquote>
+          </div>
+        </article>
+
+        <!-- STEP 4 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">04</span>
+            <div>
+              <h3 class="step-title">Privacy masking</h3>
+              <p class="step-sub">Blur faces before reusing other people's footage</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                { src: `${base}/s4-mask-before.jpg`, cap: "Locked frame" },
+                { src: `${base}/s4-mask-map.jpg`, cap: "Detected face region" },
+                { src: `${base}/s4-mask-after.jpg`, cap: "What moves forward" },
+              ].map((m) => (
+                <figure class="masked">
+                  <img src={m.src} alt={m.cap} loading="lazy" />
+                  <figcaption>{m.cap}</figcaption>
+                </figure>
+              ))}
+            </div>
+            <p class="step-copy">
+              Locked frames come from other people's footage, so before anything
+              is reused the agent runs face detection (a SAM based masker with an
+              OpenCV Haar backstop) and blurs what it finds. Here it found one
+              face region covering about 1.1% of the frame.
+            </p>
+          </div>
+        </article>
+
+        <!-- STEP 5 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">05</span>
+            <div>
+              <h3 class="step-title">When retrieval fails, ask a human</h3>
+              <p class="step-sub">Shot 4 returned confident but wrong matches</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="relative">
+              <div class="cand-grid">
+                {nomatch.map((c) => (
+                  <figure class="cand cand--dim">
+                    <img src={c.src} alt={`Rejected candidate scoring ${c.score}`} loading="lazy" />
+                    <span class="cand-score">{c.score}</span>
+                  </figure>
+                ))}
+              </div>
+              <span class="nomatch-badge">NO MATCH</span>
+            </div>
+            <p class="step-copy">
+              Shot 4 needs a team member plating food. Retrieval returned six
+              confident-looking matches, all of them menu screens. The judge
+              rejected every one. The agent then checked whether a frame it had
+              already locked for another shot could be reused, decided none fit a
+              person-action shot, and paused the graph to request a photo upload
+              from the business. It waits for up to two upload rounds, then
+              continues with a partial set instead of failing the whole video.
+            </p>
+            <blockquote class="callout">
+              <span class="callout-label">What the agent decided</span>
+              "None of the candidate images depict a person at a restaurant
+              counter, staff plating a food bowl, or a team member behind the
+              counter." Verdict no_relevant_frames.
+            </blockquote>
+            <p class="text-xs text-[var(--white-icon)] mt-3">
+              This pause is a LangGraph interrupt(), so the run resumes exactly
+              where it stopped once the upload arrives.
+            </p>
+          </div>
+        </article>
+
+        <!-- STEP 6 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">06</span>
+            <div>
+              <h3 class="step-title">Checkpoint 1: the agent reviews its own picks</h3>
+              <p class="step-sub">A second pass looks at the whole set together</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {checkpoint.map((c) => (
+                <figure class:list={["review", c.pass ? "review--pass" : "review--fail"]}>
+                  <img src={c.src} alt={`${c.shot} frame`} loading="lazy" />
+                  <figcaption>
+                    <div class="flex items-center justify-between">
+                      <span class="font-medium">{c.shot}</span>
+                      <span class:list={["dot", c.pass ? "dot--pass" : "dot--fail"]} aria-hidden="true"></span>
+                    </div>
+                    <div class="text-xs text-[var(--white-icon)] mt-1">
+                      score {c.score} / bar {c.bar}
+                    </div>
+                    <div class="text-xs mt-1" style="color: var(--white-icon);">{c.result}</div>
+                    <div class="text-xs text-[var(--white-icon)] mt-2 leading-snug">{c.issue}</div>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p class="step-copy">
+              Each frame passed the judge on its own. Checkpoint 1 is a second
+              vision pass that looks at the whole set against the script together.
+              The pass bar moves with the content type, stricter for food (8) and
+              looser for environments (6), because a slightly wrong room is fine
+              but a slightly wrong dish is not.
+            </p>
+          </div>
+        </article>
+
+        <!-- STEP 7 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">07</span>
+            <div>
+              <h3 class="step-title">Steering: fix the failed shot</h3>
+              <p class="step-sub">Rewrite the search to target what was missing</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <figure class="masked">
+                <img src={`${base}/s6-cp1-shot3.jpg`} alt="Product shot, attempt 1" loading="lazy" />
+                <figcaption>Attempt 1, score 6</figcaption>
+              </figure>
+              <figure class="masked masked--accent">
+                <img src={`${base}/s7-shot3-attempt2-locked.jpg`} alt="Product shot, attempt 2, locked" loading="lazy" />
+                <figcaption>Attempt 2, locked</figcaption>
+              </figure>
+            </div>
+            <p class="step-copy">
+              For a failed shot the agent does not just retry. It rewrites the
+              search phrases to target exactly what the reviewer said was missing,
+              excludes frames it has already tried, re-retrieves, and re-judges.
+              Every attempt is kept in a ledger so it can fall back to the best
+              one. Each shot gets at most 3 attempts.
+            </p>
+            <details class="disclosure">
+              <summary>The rewritten search phrases</summary>
+              <ul>
+                {rewrittenPhrases.map((p) => <li>{p}</li>)}
+              </ul>
+            </details>
+            <blockquote class="callout">
+              <span class="callout-label">What the agent decided</span>
+              "Candidate 0 shows an overhead view of a dish with elements like a
+              crispy cutlet, lime wedge, and glossy broth, which aligns well with
+              the product showcase description."
+            </blockquote>
+          </div>
+        </article>
+
+        <!-- STEP 8 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">08</span>
+            <div>
+              <h3 class="step-title">The locked reference set and the prompt</h3>
+              <p class="step-sub">Five frames become references for the video model</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="filmstrip">
+              {references.map((r) => (
+                <figure class="frame">
+                  <img src={r.src} alt={`${r.label}, ${r.note}`} loading="lazy" />
+                  <figcaption>
+                    <span class="font-medium">{r.label}</span>
+                    <span class="text-[var(--white-icon)]"> {r.note}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p class="step-copy">
+              The locked frames become visual references for the video model. A
+              prompt composer turns the script, the Brand DNA, and each frame's
+              description into one generation prompt, and it follows one rule above
+              all. When a frame disagrees with the script, the script wins, and the
+              frame is used only for setting and lighting.
+            </p>
+            <p class="honesty">
+              In this run the pipeline stopped after the steering step, before the
+              composer ran. The prompt below was written from the run's locked
+              frames and descriptions using the composer's own rules.
+            </p>
+            <details class="disclosure">
+              <summary>Full prompt sent to the video model</summary>
+              <pre class="prompt">{finalPrompt}</pre>
+            </details>
+          </div>
+        </article>
+
+        <!-- STEP 9 -->
+        <article class="step" data-step>
+          <div class="step-head">
+            <span class="step-num">09</span>
+            <div>
+              <h3 class="step-title">The output</h3>
+              <p class="step-sub">References and prompt handed to the video model</p>
+            </div>
+          </div>
+          <div class="step-body">
+            <div class="flex justify-center">
+              <video
+                class="w-[260px] md:w-[300px] rounded-2xl border border-[var(--white-icon-tr)]"
+                src={`${base}/final-video.mp4`}
+                poster={`${base}/hero.jpg`}
+                controls
+                playsinline
+                muted
+                loop
+              ></video>
+            </div>
+            <p class="step-copy">
+              The locked references and the prompt were handed to Seedance to
+              generate the final 15-second reel.
+            </p>
+            <p class="honesty">
+              In the v2 prototype the generation and stitching steps are stubs, so
+              this clip was generated manually from the agent's outputs. In the
+              production version (v1) the same handoff ran automatically through the
+              TopView API with ffmpeg stitching.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. HOW IT IS WIRED -->
+    <section>
+      <h2 class="section-kicker">How it is wired</h2>
+      <div class="graph">
+        <div class="graph-node graph-start">Start</div>
+        <div class="graph-line" aria-hidden="true"></div>
+        <div class="graph-node">
+          <div class="font-medium">acquire_frames</div>
+          <div class="graph-sub">retrieve, judge, mask, reuse check</div>
+        </div>
+        <div class="graph-branch">uploads needed &rarr; upload_gate (interrupt, up to 2 rounds)</div>
+        <div class="graph-line" aria-hidden="true"></div>
+        <div class="graph-node">
+          <div class="font-medium">coherence_review</div>
+          <div class="graph-sub">checkpoint 1 + steering</div>
+        </div>
+        <div class="graph-line" aria-hidden="true"></div>
+        <div class="graph-node">
+          <div class="font-medium">compose_and_ground</div>
+          <div class="graph-sub">prompts + grounding check</div>
+        </div>
+        <div class="graph-line" aria-hidden="true"></div>
+        <div class="graph-node">
+          <div class="font-medium">final_review</div>
+          <div class="graph-sub">checkpoint 2, hard fail</div>
+        </div>
+        <div class="graph-branch">error or inspect mode &rarr; End</div>
+        <div class="graph-line" aria-hidden="true"></div>
+        <div class="graph-node">
+          <div class="font-medium">generate</div>
+          <div class="graph-sub">Seedance / Kling + stitch</div>
+        </div>
+        <div class="graph-line" aria-hidden="true"></div>
+        <div class="graph-node graph-start">End</div>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-[var(--white-icon-tr)] mt-10">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-[var(--white-icon)]">
+              <th class="p-3 font-medium">Layer</th>
+              <th class="p-3 font-medium">What it is</th>
+              <th class="p-3 font-medium">Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            {components.map((c) => (
+              <tr class="border-t border-[var(--white-icon-tr)] align-top">
+                <td class="p-3 whitespace-nowrap font-medium">{c.layer}</td>
+                <td class="p-3 text-[var(--white-icon)]">{c.what}</td>
+                <td class="p-3 whitespace-nowrap"><code class="text-[var(--sec)]">{c.code}</code></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-[var(--white-icon)] mt-4 max-w-2xl">
+        This is intentionally not an open-ended ReAct loop. The orchestrator is
+        bounded and works over deterministic flows.
+      </p>
+    </section>
+
+    <!-- 6. ENGINEERING DECISIONS -->
+    <section>
+      <h2 class="section-kicker">Engineering decisions</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        {decisions.map((d) => (
+          <div class="card">
+            <h3 class="font-medium mb-2">{d.title}</h3>
+            <p class="text-sm text-[var(--white-icon)] leading-relaxed">{d.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 7. PRODUCTION SYSTEM -->
+    <section>
+      <h2 class="section-kicker">Production system (v1)</h2>
+      <p class="text-[var(--white-icon)] mb-6 max-w-2xl">
+        The first version ran as a product for 40 users between December 2025 and
+        March 2026.
+      </p>
+      <ul class="space-y-3">
+        {production.map((item) => (
+          <li class="flex gap-3 text-sm text-[var(--white-icon)]">
+            <span class="text-[var(--sec)] mt-0.5">&#9656;</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- 8. STATUS -->
+    <section>
+      <h2 class="section-kicker">Status and what is next</h2>
+      <ul class="space-y-3 max-w-2xl">
+        {[
+          "Production v1 is offline to save cost. The repo, the audit trails, and the frame index artifacts are preserved.",
+          "The v2 agent on this page is a prototype run in inspect mode. Its generation and stitching steps are stubs by design while the orchestration was being tested.",
+          "This run stopped after the steering step on a type-validation bug in how excluded frame IDs were recorded. Shot 5 was flagged but not yet steered.",
+          "Next steps are wiring the generation tools to the real video APIs, fixing that validation bug, and adding a real upload for shots like shot 4.",
+        ].map((item) => (
+          <li class="flex gap-3 text-sm text-[var(--white-icon)]">
+            <span class="text-[var(--sec)] mt-0.5">&#9656;</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- 9. STACK -->
+    <section>
+      <h2 class="section-kicker">Stack</h2>
+      <div class="flex flex-wrap gap-2">
+        {stack.map((tech) => (
+          <span class="pill">{tech}</span>
+        ))}
+      </div>
+      <p class="mt-10 text-sm text-[var(--white-icon)]">Code available on request.</p>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .section-kicker {
+    color: var(--sec);
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 1.25rem;
+    text-transform: none;
+  }
+
+  /* Platform horizontal flow */
+  .flow-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .flow-node {
+    flex: 1 1 140px;
+    min-width: 140px;
+    border: 1px solid var(--white-icon-tr);
+    background: #1414149c;
+    border-radius: 0.9rem;
+    padding: 0.9rem 1rem;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--white-icon);
+  }
+
+  /* Stepper */
+  .stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .step {
+    border: 1px solid var(--white-icon-tr);
+    background: #14141470;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    opacity: 0.55;
+    transform: translateY(6px);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.5s ease;
+  }
+  .step.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    border-color: #ffffff24;
+  }
+  .step-head {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+  }
+  .step-num {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--sec);
+    line-height: 1;
+    min-width: 2.5rem;
+  }
+  .step-title {
+    font-size: 1.35rem;
+    font-weight: 500;
+  }
+  .step-sub {
+    font-size: 0.85rem;
+    color: var(--white-icon);
+    margin-top: 0.15rem;
+  }
+  .step-body {
+    padding-left: 0;
+  }
+  .step-copy {
+    color: var(--white-icon);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-top: 1rem;
+  }
+
+  /* Candidate grids */
+  .cand-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+  @media (min-width: 640px) {
+    .cand-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+  .cand {
+    position: relative;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--white-icon-tr);
+    aspect-ratio: 3 / 4;
+    transition: opacity 0.3s ease;
+  }
+  .cand img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .cand--dim {
+    opacity: 0.45;
+  }
+  .cand--locked {
+    outline: 2px solid var(--sec);
+    outline-offset: -2px;
+    opacity: 1;
+  }
+  .cand--warn {
+    outline: 2px solid #f5a623;
+    outline-offset: -2px;
+    opacity: 1;
+  }
+  .cand-score {
+    position: absolute;
+    bottom: 0.4rem;
+    left: 0.4rem;
+    font-size: 0.7rem;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.4rem;
+  }
+  .cand-badge {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    background: var(--sec);
+    color: var(--background);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.4rem;
+    font-weight: 600;
+  }
+  .cand-badge--warn {
+    background: #f5a623;
+    left: 0.4rem;
+    right: auto;
+  }
+  .nomatch-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-4deg);
+    background: rgba(20, 20, 20, 0.85);
+    border: 1px solid #f5a623;
+    color: #f5a623;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    padding: 0.4rem 1.2rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Masked / before-after figures */
+  .masked {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--white-icon-tr);
+  }
+  .masked--accent {
+    outline: 2px solid var(--sec);
+    outline-offset: -2px;
+  }
+  .masked img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  .masked figcaption {
+    font-size: 0.75rem;
+    color: var(--white-icon);
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Review tiles */
+  .review {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--white-icon-tr);
+  }
+  .review img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+  }
+  .review figcaption {
+    padding: 0.6rem;
+  }
+  .review--fail {
+    outline: 1px solid #f5a62366;
+    outline-offset: -1px;
+  }
+  .dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .dot--pass {
+    background: #7ee081;
+  }
+  .dot--fail {
+    background: #f5a623;
+  }
+
+  /* Filmstrip */
+  .filmstrip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+  @media (min-width: 640px) {
+    .filmstrip {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  .frame {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--white-icon-tr);
+  }
+  .frame img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+  }
+  .frame figcaption {
+    font-size: 0.7rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  /* Pills */
+  .pill {
+    font-size: 0.75rem;
+    color: var(--white-icon);
+    border: 1px solid var(--white-icon-tr);
+    background: #1414149c;
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+  }
+
+  /* Callout */
+  .callout {
+    margin-top: 1rem;
+    border-left: 2px solid var(--sec);
+    background: #1414149c;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0 0.75rem 0.75rem 0;
+    font-size: 0.9rem;
+    color: var(--white);
+    line-height: 1.6;
+  }
+  .callout-label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--sec);
+    margin-bottom: 0.35rem;
+  }
+
+  /* Honesty note */
+  .honesty {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--white-icon);
+    border: 1px dashed var(--white-icon-tr);
+    border-radius: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    line-height: 1.55;
+  }
+
+  /* Disclosure */
+  .disclosure {
+    margin-top: 1rem;
+    border: 1px solid var(--white-icon-tr);
+    border-radius: 0.75rem;
+    background: #14141470;
+  }
+  .disclosure summary {
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    color: var(--white);
+    list-style: none;
+  }
+  .disclosure summary::-webkit-details-marker {
+    display: none;
+  }
+  .disclosure summary::before {
+    content: "+ ";
+    color: var(--sec);
+  }
+  .disclosure[open] summary::before {
+    content: "- ";
+  }
+  .disclosure > *:not(summary) {
+    padding: 0 1rem 1rem;
+    font-size: 0.85rem;
+    color: var(--white-icon);
+    line-height: 1.6;
+  }
+  .disclosure ul {
+    list-style: disc;
+    padding-left: 2.2rem;
+  }
+  .disclosure ul li {
+    margin-bottom: 0.4rem;
+  }
+  .prompt {
+    white-space: pre-wrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--white-icon);
+    background: #0c0c0c;
+    border: 1px solid var(--white-icon-tr);
+    border-radius: 0.5rem;
+    padding: 0.9rem;
+    overflow-x: auto;
+  }
+
+  /* Wiring graph */
+  .graph {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .graph-node {
+    width: 100%;
+    max-width: 26rem;
+    text-align: center;
+    border: 1px solid var(--white-icon-tr);
+    background: #1414149c;
+    border-radius: 0.9rem;
+    padding: 0.8rem 1rem;
+  }
+  .graph-start {
+    max-width: 10rem;
+    color: var(--white-icon);
+    font-size: 0.85rem;
+  }
+  .graph-sub {
+    font-size: 0.75rem;
+    color: var(--white-icon);
+    margin-top: 0.15rem;
+  }
+  .graph-line {
+    width: 1px;
+    height: 1.1rem;
+    background: var(--white-icon-tr);
+  }
+  .graph-branch {
+    font-size: 0.72rem;
+    color: var(--white-icon);
+    border: 1px dashed var(--white-icon-tr);
+    border-radius: 999px;
+    padding: 0.25rem 0.8rem;
+  }
+
+  /* Cards */
+  .card {
+    border: 1px solid var(--white-icon-tr);
+    background: #1414149c;
+    border-radius: 1rem;
+    padding: 1.1rem 1.2rem;
+  }
+</style>
+
+<script>
+  const steps = document.querySelectorAll<HTMLElement>("[data-step]");
+  if (steps.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-active");
+          }
+        });
+      },
+      { threshold: 0.35, rootMargin: "-10% 0px -20% 0px" }
+    );
+    steps.forEach((s) => observer.observe(s));
+  }
+</script>

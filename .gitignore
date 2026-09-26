@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# source packet for the HeatMap case study (assets already copied into public/)
+portfolio_packet/
