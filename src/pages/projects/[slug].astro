@@ -1,0 +1,267 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/nav.astro";
+import Footer from "@/components/footer.astro";
+import { projectPages, type ProjectPage } from "@/data/projectPages";
+
+export function getStaticPaths() {
+  return projectPages.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+interface Props {
+  item: ProjectPage;
+}
+const { item } = Astro.props as Props;
+
+const hero = item.figures?.[0];
+const gallery = item.figures?.slice(1) ?? [];
+const chips = [item.status, item.year, item.role].filter(Boolean);
+---
+
+<Layout title={item.title} description={item.tagline}>
+  <Nav />
+  <div class="max-w-3xl mx-auto pt-10">
+    <a
+      href="/projects"
+      class="inline-flex items-center gap-2 text-sm text-[var(--white-icon)] hover:text-white transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+        <path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z" />
+      </svg>
+      Back to projects
+    </a>
+  </div>
+
+  <article class="max-w-3xl mx-auto text-[var(--white)] pt-10 pb-24">
+    <p class="text-sm text-[var(--sec)] shiny-sec mb-3">Project</p>
+    <h1 class="text-4xl md:text-5xl font-medium leading-tight mb-4">{item.title}</h1>
+    <p class="text-lg text-[var(--white-icon)] leading-relaxed mb-6">{item.tagline}</p>
+
+    <div class="flex flex-wrap gap-2 mb-6">
+      {chips.map((chip) => (
+        <span class="text-xs text-[var(--white-icon)] border border-[var(--white-icon-tr)] bg-[#1414149c] rounded-full px-3 py-1">
+          {chip}
+        </span>
+      ))}
+      {item.teamProject && (
+        <span class="text-xs text-[var(--sec)] border border-[var(--sec)]55 bg-[#1414149c] rounded-full px-3 py-1">
+          Team project
+        </span>
+      )}
+    </div>
+
+    {item.links && (
+      <div class="flex flex-wrap gap-3 mb-6">
+        {item.links.map((link) => (
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-sm text-[var(--white-icon)] hover:text-white transition border border-[var(--white-icon-tr)] px-4 py-2 rounded-xl bg-[#1414149c] hover:bg-[var(--white-icon-tr)]"
+          >
+            {link.label}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+              <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
+            </svg>
+          </a>
+        ))}
+      </div>
+    )}
+
+    {item.statTiles && (
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        {item.statTiles.map((s) => (
+          <div class="border border-[var(--white-icon-tr)] bg-[#1414149c] rounded-xl px-4 py-3 text-center">
+            <div class="text-xl font-semibold">{s.big}</div>
+            <div class="text-xs text-[var(--white-icon)]">{s.small}</div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {hero && (
+      <figure class="fig mt-4">
+        <div class="fig-panel">
+          <img src={hero.src} alt={hero.caption} loading="lazy" data-zoom />
+        </div>
+        <figcaption>{hero.caption}</figcaption>
+      </figure>
+    )}
+
+    <div class="mt-12 space-y-10">
+      <section>
+        <h2 class="detail-h">The problem</h2>
+        <p class="detail-p">{item.problem}</p>
+      </section>
+      <section>
+        <h2 class="detail-h">{item.teamProject ? "What the team built" : "What I built"}</h2>
+        <p class="detail-p">{item.whatBuilt}</p>
+      </section>
+      {item.myPart && (
+        <section>
+          <h2 class="detail-h">My part</h2>
+          <p class="detail-p">{item.myPart}</p>
+        </section>
+      )}
+      {item.howItWorks && (
+        <section>
+          <h2 class="detail-h">How it works</h2>
+          <ul class="space-y-2 mt-2">
+            {item.howItWorks.map((step) => (
+              <li class="flex gap-3 detail-p">
+                <span class="text-[var(--sec)] mt-2 shrink-0 w-1 h-1 rounded-full bg-[var(--sec)]" />
+                <span>{step}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {item.outcome && (
+        <section>
+          <h2 class="detail-h">Outcome</h2>
+          <ul class="space-y-2 mt-2">
+            {item.outcome.map((o) => (
+              <li class="flex gap-3 detail-p">
+                <span class="text-[var(--sec)] mt-0.5">&#9656;</span>
+                <span>{o}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {item.statusNote && (
+        <p class="text-sm text-[var(--white-icon)] border border-dashed border-[var(--white-icon-tr)] rounded-xl p-4">
+          {item.statusNote}
+        </p>
+      )}
+      {item.nextSteps && (
+        <section>
+          <h2 class="detail-h">What is next</h2>
+          <ul class="space-y-2 mt-2">
+            {item.nextSteps.map((n) => (
+              <li class="flex gap-3 detail-p">
+                <span class="text-[var(--sec)] mt-0.5">&#9656;</span>
+                <span>{n}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+
+    {gallery.length > 0 && (
+      <section class="mt-14">
+        <h2 class="detail-h mb-4">Figures</h2>
+        <div class="space-y-6">
+          {gallery.map((fig) => (
+            <figure class="fig">
+              <div class="fig-panel">
+                <img src={fig.src} alt={fig.caption} loading="lazy" data-zoom />
+              </div>
+              <figcaption>{fig.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {item.stack && (
+      <section class="mt-14">
+        <h2 class="detail-h mb-4">Stack</h2>
+        <div class="flex flex-wrap gap-2">
+          {item.stack.map((tech) => (
+            <span class="text-xs text-[var(--white-icon)] border border-[var(--white-icon-tr)] bg-[#1414149c] rounded-full px-3 py-1">
+              {tech}
+            </span>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <img id="lightbox-img" src="" alt="" />
+  </div>
+  <Footer />
+</Layout>
+
+<style>
+  .detail-h {
+    color: var(--sec);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+  .detail-p {
+    color: var(--white-icon);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .fig-panel {
+    background: #f4f4f5;
+    border: 1px solid var(--white-icon-tr);
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+  .fig-panel img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.4rem;
+    cursor: zoom-in;
+    display: block;
+  }
+  .fig figcaption {
+    margin-top: 0.6rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--white-icon);
+  }
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(8, 8, 8, 0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    cursor: zoom-out;
+  }
+  .lightbox.open {
+    display: flex;
+  }
+  .lightbox img {
+    max-width: 95vw;
+    max-height: 92vh;
+    border-radius: 0.5rem;
+    background: #fff;
+  }
+</style>
+
+<script>
+  const box = document.getElementById("lightbox");
+  const boxImg = document.getElementById("lightbox-img") as HTMLImageElement | null;
+  if (box && boxImg) {
+    document.querySelectorAll<HTMLImageElement>("img[data-zoom]").forEach((img) => {
+      img.addEventListener("click", () => {
+        boxImg.src = img.src;
+        boxImg.alt = img.alt;
+        box.classList.add("open");
+        box.setAttribute("aria-hidden", "false");
+      });
+    });
+    const close = () => {
+      box.classList.remove("open");
+      box.setAttribute("aria-hidden", "true");
+      boxImg.src = "";
+    };
+    box.addEventListener("click", close);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
+    });
+  }
+</script>

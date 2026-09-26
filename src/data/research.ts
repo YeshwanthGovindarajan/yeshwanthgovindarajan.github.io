@@ -288,36 +288,12 @@ export const researchItems: ResearchItem[] = [
     contribution: "Presented the paper in person at NMITCON 2024 in Bangalore.",
     outcome: ["89.63% clinical prediction accuracy"],
     figures: [
+      { src: img("clinical-ensemble-model", "architecture.png"), caption: "Stacked ensemble with linear meta-learner" },
       { src: img("clinical-ensemble-model", "nmitcon-certificate.jpg"), caption: "Conference certificate, NMITCON 2024", small: true },
     ],
   },
-  // ---------------- List-only items (no detail page) ----------------
   {
-    group: "journal",
-    kicker: "Research paper",
-    title:
-      "Enhanced Information Retrieval Using Hybrid p-Norm Extended Boolean Models with BERT",
-    venue: "Procedia Computer Science, ICMLDE",
-    year: "2025",
-    status: "Published",
-    links: [
-      { label: "Paper", href: "https://www.sciencedirect.com/science/article/pii/S1877050925016679" },
-    ],
-    summary:
-      "Fine-tuned BERT combined with extended Boolean retrieval, 0.92 accuracy and AUC.",
-  },
-  {
-    group: "journal",
-    kicker: "Research paper",
-    title:
-      "Enhancing Smart City Connectivity through Non-Terrestrial Networks and Quantum Security",
-    venue: "IEEE Consumer Electronics Magazine",
-    year: "2024",
-    status: "Under review",
-    summary:
-      "Weather-balloon networks for connectivity plus quantum key distribution for security.",
-  },
-  {
+    slug: "autism-cnn-ensemble",
     group: "conference",
     kicker: "Research paper",
     title:
@@ -325,11 +301,71 @@ export const researchItems: ResearchItem[] = [
     venue: "2nd IEEE WCONF",
     year: "2024",
     status: "Published",
+    tier: 2,
+    tagline:
+      "Soft-voting ensemble of EfficientNet B5, MobileNet, and InceptionV3 for ASD detection from images.",
     links: [{ label: "Paper", href: "https://doi.org/10.1109/WCONF61366.2024.10692110" }],
     summary:
       "Soft-voting ensemble of EfficientNet B5, MobileNet, and InceptionV3 at 91% accuracy.",
+    problem:
+      "Diagnosis of autism spectrum disorder benefits from models that generalize across imaging conditions while staying accurate on subtle facial cues.",
+    whatBuilt:
+      "An ensemble of transfer-learned CNNs fine-tuned for binary ASD detection, combined with soft voting over model predictions.",
+    outcome: ["About 91% accuracy on held-out evaluation"],
+    figures: [
+      { src: img("autism-cnn-ensemble", "architecture.png"), caption: "Ensemble of EfficientNet B5, MobileNet, and InceptionV3" },
+    ],
   },
   {
+    slug: "bert-extended-boolean-ir",
+    group: "journal",
+    kicker: "Research paper",
+    title:
+      "Enhanced Information Retrieval Using Hybrid p-Norm Extended Boolean Models with BERT",
+    venue: "Procedia Computer Science, ICMLDE",
+    year: "2025",
+    status: "Published",
+    tier: 2,
+    tagline:
+      "Fine-tuned BERT combined with extended Boolean retrieval for hybrid information retrieval.",
+    links: [
+      { label: "Paper", href: "https://www.sciencedirect.com/science/article/pii/S1877050925016679" },
+    ],
+    summary:
+      "Fine-tuned BERT combined with extended Boolean retrieval, 0.92 accuracy and AUC.",
+    problem:
+      "Classic Boolean retrieval misses semantic matches while dense models miss precise logical constraints. Hybrid models aim to combine both.",
+    whatBuilt:
+      "A hybrid p-norm extended Boolean retrieval framework paired with a fine-tuned BERT encoder for ranking.",
+    outcome: ["0.92 accuracy and AUC on the evaluation setup"],
+    figures: [
+      { src: img("bert-extended-boolean-ir", "architecture.png"), caption: "Hybrid BERT and extended Boolean retrieval architecture" },
+    ],
+  },
+  {
+    slug: "smart-city-ntn-quantum",
+    group: "journal",
+    kicker: "Research paper",
+    title:
+      "Enhancing Smart City Connectivity through Non-Terrestrial Networks and Quantum Security",
+    venue: "IEEE Consumer Electronics Magazine",
+    year: "2024",
+    status: "Under review",
+    tier: 2,
+    tagline:
+      "Weather-balloon networks for connectivity plus quantum key distribution for security.",
+    summary:
+      "Weather-balloon networks for connectivity plus quantum key distribution for security.",
+    problem:
+      "Smart city sensors need resilient connectivity where terrestrial links fail, without sacrificing confidentiality of telemetry.",
+    whatBuilt:
+      "An architecture combining non-terrestrial network relays with quantum-secured key exchange for city-scale IoT backhaul.",
+    figures: [
+      { src: img("smart-city-ntn-quantum", "architecture.png"), caption: "NTN and quantum security architecture for smart cities" },
+    ],
+  },
+  {
+    slug: "exam-malpractice-detection",
     group: "manuscript",
     kicker: "Manuscript",
     title:
@@ -337,7 +373,16 @@ export const researchItems: ResearchItem[] = [
     venue: "Manuscript",
     year: "2024",
     status: "In preparation",
+    tier: 2,
+    tagline: "Multi-modal proctoring with Isolation Forest anomaly detection.",
     summary: "Multi-modal proctoring with Isolation Forest anomaly detection.",
+    problem:
+      "Automated exam platforms need to flag suspicious behavior without storing unnecessary personal video long term.",
+    whatBuilt:
+      "A multi-modal proctoring pipeline with anomaly detection to flag likely malpractice events during online exams.",
+    figures: [
+      { src: img("exam-malpractice-detection", "architecture.png"), caption: "Proctoring and anomaly detection pipeline" },
+    ],
   },
 ];
 
