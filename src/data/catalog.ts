@@ -19,8 +19,6 @@ export interface CatalogItem {
   tags?: string[];
   /** Show on homepage project strip (below featured HeatMap). */
   homeStrip?: boolean;
-  /** Show in "Currently working on" strip on homepage. */
-  workingOn?: boolean;
 }
 
 export const catalogItems: CatalogItem[] = [
@@ -52,6 +50,34 @@ export const catalogItems: CatalogItem[] = [
     image: "/projects/generative-retrieval-tiger/architecture.png",
     diagram: true,
     tags: ["RQ-VAE", "Transformer", "TencentGR-1M"],
+    homeStrip: true,
+  },
+  {
+    id: "naturalbench-diffusion-features",
+    category: "multimodal-representation-learning",
+    kind: "project",
+    title: "Diffusion feature distillation",
+    status: "In progress · team",
+    cardLine:
+      "Question-conditioned Stable Diffusion features that light up the regions a question asks about, distilled into a model that sees one image.",
+    href: "/projects/naturalbench-diffusion-features",
+    image: "/projects/naturalbench-diffusion-features/motorcycle-q1-rider-helmet.png",
+    diagram: true,
+    tags: ["Stable Diffusion", "MLLM", "Distillation", "NaturalBench"],
+    homeStrip: true,
+  },
+  {
+    id: "latent-world-model-actor-critic",
+    category: "multimodal-representation-learning",
+    kind: "project",
+    title: "Actor-critic planning in latent world models",
+    status: "In progress",
+    cardLine:
+      "Can a learned actor-critic replace CEM search when planning inside a latent world model?",
+    href: "/projects/latent-world-model-actor-critic",
+    image: "/projects/latent-world-model-actor-critic/cem-vs-actor-critic.png",
+    diagram: true,
+    tags: ["Reinforcement learning", "World models", "CEM"],
     homeStrip: true,
   },
   {
@@ -109,35 +135,6 @@ export const catalogItems: CatalogItem[] = [
     href: "/research/lost-and-found-patent",
     image: "/projects/lost-and-found-patent/findify-homepage.webp",
     tags: ["Patent", "BLIP captioning", "Web app"],
-    homeStrip: true,
-  },
-  {
-    id: "naturalbench-diffusion-features",
-    category: "multimodal-representation-learning",
-    kind: "project",
-    title: "NaturalBench diffusion features",
-    status: "Proposal stage · team",
-    cardLine:
-      "Distilling what a model learns from comparing two images into one that sees only one.",
-    href: "/projects/naturalbench-diffusion-features",
-    image: "/projects/naturalbench-diffusion-features/phase1-teacher.png",
-    diagram: true,
-    tags: ["Stable Diffusion", "MLLM", "Distillation"],
-    workingOn: true,
-  },
-  {
-    id: "latent-world-model-actor-critic",
-    category: "recommendation-systems",
-    kind: "project",
-    title: "Latent world model actor-critic",
-    status: "In progress",
-    cardLine:
-      "Can a learned actor-critic replace CEM search in latent world model planning?",
-    href: "/projects/latent-world-model-actor-critic",
-    image: "/projects/latent-world-model-actor-critic/cem-vs-actor-critic.png",
-    diagram: true,
-    tags: ["World models", "CEM", "Actor-critic"],
-    workingOn: true,
   },
   {
     id: "chronicle-ranking",
@@ -249,8 +246,6 @@ export const catalogItems: CatalogItem[] = [
 export const featuredProject = catalogItems.find((i) => i.id === "heatmap")!;
 
 export const homeStripItems = catalogItems.filter((i) => i.homeStrip);
-
-export const workingOnItems = catalogItems.filter((i) => i.workingOn);
 
 /** Full browse list on /projects. */
 export const projectsHubItems = catalogItems;

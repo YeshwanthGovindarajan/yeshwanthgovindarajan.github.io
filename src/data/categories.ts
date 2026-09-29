@@ -10,8 +10,8 @@ export const portfolioCategories: {
 }[] = [
   {
     id: "multimodal-representation-learning",
-    label: "Multimodal representation learning",
-    short: "Multimodal",
+    label: "Multimodal AI",
+    short: "Multimodal AI",
   },
   {
     id: "recommendation-systems",

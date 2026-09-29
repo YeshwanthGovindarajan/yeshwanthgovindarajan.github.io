@@ -15,13 +15,11 @@ Open http://localhost:4321
 
 ## Customize
 
-Edit these files with your details:
-
-- `src/layouts/Layout.astro` — page title, meta, OG tags
-- `src/components/home.astro` — name and social links
-- `src/components/projects.astro` — your projects
-- `src/components/footer.astro` — footer, Spotify, copyright
-- `src/components/contact.astro` — Formspree contact form endpoint
+- `src/data/site.ts` — name, role, contact links, tech stack icons
+- `src/data/catalog.ts` — project and research cards (homepage strip and `/projects`)
+- `src/data/projectPages.ts` — project detail pages
+- `src/data/research.ts` — research and patent pages
+- `src/React/SkillsList.tsx` — "What I do" focus areas
 
 ## Deploy
 

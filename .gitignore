@@ -26,3 +26,4 @@ pnpm-debug.log*
 # source packets (assets already copied into public/)
 portfolio_packet/
 portfolio_packet copy/
+portfolio_packet copy 2/

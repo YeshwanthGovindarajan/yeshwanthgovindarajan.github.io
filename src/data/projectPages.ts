@@ -20,6 +20,12 @@ export interface ProjectPage {
   outcome?: string[];
   statTiles?: { big: string; small: string }[];
   figures?: ProjectFigure[];
+  visualizations?: {
+    title: string;
+    intro: string;
+    legend: { label: string; text: string }[];
+    figures: ProjectFigure[];
+  };
   nextSteps?: string[];
   statusNote?: string;
   short?: boolean;
@@ -150,7 +156,7 @@ export const projectPages: ProjectPage[] = [
     title: "Task-Aware Diffusion Features for Fine-Grained Visual Understanding",
     tagline:
       "Testing whether Stable Diffusion features help a multimodal LLM notice the small visual differences that flip an answer.",
-    status: "Proposal stage",
+    status: "In progress",
     year: "2026",
     role: "Leads Idea 4, privileged cross-image distillation (CMU 11-777 MMML)",
     teamProject: true,
@@ -161,6 +167,7 @@ export const projectPages: ProjectPage[] = [
     whatBuilt:
       "Privileged cross-image distillation. At test time the model sees one image. During training it can see the confusable twin. A teacher sees both images and a difference module compresses contrast into 32 tokens. A student learns to predict those tokens from a single image, then deploys without the twin at inference.",
     howItWorks: [
+      "Stable Diffusion UNet features are extracted with and without the question as the text condition, so their difference points at the regions the question is about",
       "Phase 1. Teacher with both images and a difference module trained through QA loss",
       "Phase 2. Frozen teacher distills difference tokens into a student that sees only image A",
       "Phase 3. Single-image fine-tune and deploy without the teacher or contrast image",
@@ -179,7 +186,42 @@ export const projectPages: ProjectPage[] = [
         caption: "Phase 3. Deployed single-image model",
       },
     ],
-    statusNote: "Proposal submitted, experiments starting. No results block yet.",
+    visualizations: {
+      title: "Early feature visualizations",
+      intro:
+        "First qualitative checks on NaturalBench pairs, seed 0 at timestep 50. Each row is one image of a pair. Conditioning the diffusion model on the question shifts its features, and where that shift lands shows which parts of the image the question pulls attention toward.",
+      legend: [
+        { label: "Image", text: "What the model sees. Green boxes mark the regions the question refers to." },
+        { label: "PCA uncond and cond", text: "Top three principal components of UNet features, without and with the question." },
+        { label: "PCA cond minus uncond", text: "What the question changes in feature space." },
+        { label: "|cond minus uncond|", text: "Size of that change, overlaid on the image." },
+        { label: "attn", text: "Cross-attention for individual question words." },
+      ],
+      figures: [
+        {
+          src: img("naturalbench-diffusion-features", "motorcycle-q1-rider-helmet.png"),
+          caption:
+            "Is the rider wearing a helmet? In the second image the question-driven shift and the attention for helmet and rider gather around the rider's head, inside the green box.",
+        },
+        {
+          src: img("naturalbench-diffusion-features", "motorcycle-q0-wheel-ground.png"),
+          caption:
+            "Same images, different question. Asking whether only one wheel touches the ground gives a different shift pattern across the bike body and wheels, so the features change with the question rather than staying fixed.",
+        },
+        {
+          src: img("naturalbench-diffusion-features", "nb1588-q1-athlete-child.png"),
+          caption:
+            "Is the image showcasing a single athlete interacting with a child? The conditioned features pull the child apart from the adult in the second image, the separate yellow region in the cond minus uncond panel.",
+        },
+        {
+          src: img("naturalbench-diffusion-features", "nb1588-q0-adults.png"),
+          caption:
+            "Are both individuals in the image adults? The shift separates the people from the background but does not single out either person, which is why a contrast signal between the two images still matters.",
+        },
+      ],
+    },
+    statusNote:
+      "Experiments in progress. The feature maps above are early qualitative checks, and there are no benchmark numbers yet.",
   },
   {
     slug: "latent-world-model-actor-critic",

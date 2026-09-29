@@ -1,24 +1,37 @@
 ---
+import { site } from "@/data/site";
+
 interface Props {
   title: string;
   description?: string;
 }
 
-const {
-  title,
-  description = "Your Name - Software Developer building interactive and seamless digital experiences with cutting-edge frontend development.",
-} = Astro.props;
+const { title, description = site.description } = Astro.props;
+const pageTitle = title === site.name ? `${site.name} | ${site.role}` : `${title} | ${site.name}`;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const ogImage = `${site.url}/og.image.png`;
+const personLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  url: site.url,
+  email: `mailto:${site.email}`,
+  jobTitle: site.role,
+  alumniOf: site.school,
+  sameAs: [site.github, site.linkedin].filter(Boolean),
+  description: site.description,
+});
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>{title} | Portfolio</title>
+    <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="canonical" href="https://darkminimal.vercel.app/" />
+    <link rel="canonical" href={canonical} />
 
     <link
       rel="preload"
@@ -28,42 +41,14 @@ const {
       crossorigin="anonymous"
     />
 
-    <meta
-      property="og:title"
-      content="Your Name | Software Developer"
-    />
-    <meta
-      property="og:description"
-      content="Portfolio of Your Name, Software Developer specializing in frontend and interactive experiences."
-    />
-    <meta
-      property="og:image"
-      content="https://darkminimal.vercel.app/og.image.png"
-    />
-    <meta property="og:url" content="https://darkminimal.vercel.app" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:site_name"
-      content="Your Name Portfolio"
-    />
+    <meta property="og:site_name" content={site.name} />
 
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Your Name",
-        "alternateName": "Your Name",
-        "url": "https://darkminimal.vercel.app",
-        "image": "https://darkminimal.vercel.app/og.image.png",
-        "sameAs": [
-          "https://github.com",
-          "https://linkedin.com"
-        ],
-        "jobTitle": "Software Developer",
-        "description": "Software Developer building interactive and seamless digital experiences."
-      }
-    </script>
+    <script is:inline type="application/ld+json" set:html={personLd} />
   </head>
   <body class="bg-[--background] sm:px-28 lg:px-20 px-9">
     <slot />

@@ -1,20 +1,5 @@
 ---
-const technologies = [
-  "astro",
-  "vue",
-  "react",
-  "typeScript",
-  "tailwindcss",
-  "next",
-  "nodejs",
-  "HTML5",
-  "CSS3",
-  "javaScript",
-  "git",
-  "supabase",
-  "mysql",
-  "bash",
-];
+import { techStack } from "@/data/site";
 ---
 
 <div class="relative overflow-x-hidden py-8">
@@ -23,22 +8,22 @@ const technologies = [
 
   <div class="flex animate-scroll w-max will-change-transform">
     {
-      [...technologies, ...technologies].map((tech, index) => (
+      [...techStack, ...techStack].map((tech, index) => (
         <div 
           class="flex items-center gap-2 pr-12 md:pr-20 group transition-all duration-300"
-          aria-hidden={index >= technologies.length ? "true" : "false"}
+          aria-hidden={index >= techStack.length ? "true" : "false"}
         >
           <img
-            src={`/svg/${tech}.svg`}
-            alt={tech}
+            src={`/svg/stack/${tech.icon}.svg`}
+            alt={tech.label}
             class="h-7 w-auto object-contain transition-transform group-hover:scale-110 opacity-60"
             width="30"
             height="30"
-            loading={index < technologies.length ? "eager" : "lazy"}
+            loading={index < techStack.length ? "eager" : "lazy"}
             decoding="async"
           />
           <span class="text-lg font-medium text-[var(--white-icon)] whitespace-nowrap">
-            {tech.charAt(0).toUpperCase() + tech.slice(1)}
+            {tech.label}
           </span>
         </div>
       ))

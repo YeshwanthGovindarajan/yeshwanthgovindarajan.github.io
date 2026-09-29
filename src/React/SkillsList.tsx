@@ -1,36 +1,88 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
-const CategoryIcons = {
-  "Web Development": (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-app-window-mac text-[var(--sec)]"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/></svg>
-  ),
-  "Mobile Development": (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-tablet-smartphone text-[var(--sec)]"><rect width="10" height="14" x="3" y="8" rx="2"/><path d="M5 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2h-2.4"/><path d="M8 18h.01"/></svg>
-  ),
-  "UI/UX Design & Prototyping": (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-spline-pointer text-[var(--sec)]"><path d="M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033z"/><path d="M5 17A12 12 0 0 1 17 5"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/></svg>
-  ),
+type FocusItem = { text: string; href?: string };
+
+const iconProps = {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: 24,
+  height: 24,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  className: "text-[var(--sec)] shrink-0",
 };
 
-const SkillsList = () => {
-  const [openItem, setOpenItem] = useState<string | null>(null);
+const focuses: { title: string; icon: ReactNode; items: FocusItem[] }[] = [
+  {
+    title: "Multimodal AI",
+    icon: (
+      <svg {...iconProps}>
+        <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
+        <rect x="2" y="6" width="14" height="12" rx="2" />
+      </svg>
+    ),
+    items: [
+      { text: "Video generation for shot-by-shot marketing Reels", href: "/projects/heatmap" },
+      {
+        text: "Diffusion representation learning for fine-grained image understanding",
+        href: "/projects/naturalbench-diffusion-features",
+      },
+      {
+        text: "Latent world models with actor-critic planning",
+        href: "/projects/latent-world-model-actor-critic",
+      },
+      {
+        text: "Face, voice, and signature fusion for biometrics",
+        href: "/research/multimodal-biometric-auth",
+      },
+    ],
+  },
+  {
+    title: "Recommendation systems",
+    icon: (
+      <svg {...iconProps}>
+        <path d="M3 5h.01" />
+        <path d="M3 12h.01" />
+        <path d="M3 19h.01" />
+        <path d="M8 5h13" />
+        <path d="M8 12h13" />
+        <path d="M8 19h13" />
+      </svg>
+    ),
+    items: [
+      {
+        text: "TIGER generative retrieval on 1M real ad sequences",
+        href: "/projects/generative-retrieval-tiger",
+      },
+      { text: "Two-tower ad channel ranking at Chronicle Studio", href: "/#experience" },
+      { text: "Hybrid BERT and extended Boolean retrieval", href: "/research/bert-extended-boolean-ir" },
+    ],
+  },
+  {
+    title: "Agentic AI",
+    icon: (
+      <svg {...iconProps}>
+        <path d="M12 8V4H8" />
+        <rect width="16" height="12" x="4" y="8" rx="2" />
+        <path d="M2 14h2" />
+        <path d="M20 14h2" />
+        <path d="M15 13v2" />
+        <path d="M9 13v2" />
+      </svg>
+    ),
+    items: [
+      { text: "HeatMap, a LangGraph marketing copilot", href: "/projects/heatmap" },
+      { text: "ATLAS agentic test suggestion at CGI", href: "/#experience" },
+      { text: "MoleculeAgent, MCP tools for protein design", href: "/projects/molecule-agent" },
+    ],
+  },
+];
 
-  const skills = {
-    "Web Development": [
-      "Single Page Applications (SPAs)",
-      "Landing pages and business websites",
-      "Portfolio websites",
-    ],
-    "Mobile Development": [
-      "Mobile-friendly web apps",
-      "React Native mobile apps",
-    ],
-    "UI/UX Design & Prototyping": [
-      "UI design with Figma & Canva",
-      "UX research & improvements",
-      "Prototyping for websites & mobile apps",
-    ],
-  };
+const SkillsList = () => {
+  const [openItem, setOpenItem] = useState<string | null>(focuses[0].title);
 
   const toggleItem = (item: string) => {
     setOpenItem(openItem === item ? null : item);
@@ -39,49 +91,52 @@ const SkillsList = () => {
   return (
     <div className="text-left pt-3 md:pt-9">
       <h3 className="text-[var(--white)] text-3xl md:text-4xl font-semibold md:mb-6">
-        What I do?
+        What I do
       </h3>
       <ul className="space-y-4 mt-4 text-lg">
-        {Object.entries(skills).map(([category, items]) => (
-          <li key={category} className="w-full">
-            <div
-              onClick={() => toggleItem(category)}
-              className="md:w-[400px] w-full bg-[#1414149c] rounded-2xl text-left hover:bg-opacity-80 transition-all border border-[var(--white-icon-tr)] cursor-pointer overflow-hidden"
-            >
-              <div className="flex items-center gap-3 p-4">
-                {CategoryIcons[category as keyof typeof CategoryIcons]}
-                <div className="flex items-center gap-2 flex-grow justify-between">
-                  <div className="min-w-0 max-w-[200px] md:max-w-none overflow-hidden">
-                    <span className="block truncate text-[var(--white)] text-lg">
-                      {category}
-                    </span>
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className={`w-6 h-6 text-[var(--white)] transform transition-transform flex-shrink-0 ${
-                      openItem === category ? "rotate-180" : ""
-                    }`}
-                  >
-                    <path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path>
-                  </svg>
-                </div>
-              </div>
+        {focuses.map(({ title, icon, items }) => (
+          <li key={title} className="w-full">
+            <div className="md:w-[440px] w-full bg-[#1414149c] rounded-2xl text-left hover:bg-opacity-80 transition-all border border-[var(--white-icon-tr)] overflow-hidden">
+              <button
+                type="button"
+                onClick={() => toggleItem(title)}
+                aria-expanded={openItem === title}
+                className="w-full flex items-center gap-3 p-4 cursor-pointer text-left"
+              >
+                {icon}
+                <span className="flex-grow text-[var(--white)] text-lg">{title}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className={`w-6 h-6 text-[var(--white)] transform transition-transform flex-shrink-0 ${
+                    openItem === title ? "rotate-180" : ""
+                  }`}
+                >
+                  <path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path>
+                </svg>
+              </button>
 
               <div
-                className={`transition-all duration-300 px-4 ${
-                  openItem === category
-                    ? "max-h-[500px] pb-4 opacity-100"
-                    : "max-h-0 opacity-0"
+                className={`transition-all duration-300 px-4 overflow-hidden ${
+                  openItem === title ? "max-h-[500px] pb-4 opacity-100" : "max-h-0 opacity-0"
                 }`}
               >
                 <ul className="space-y-2 text-[var(--white-icon)] text-sm">
-                  {items.map((item, index) => (
-                    <div key={index} className="flex items-center">
+                  {items.map((item) => (
+                    <li key={item.text} className="flex items-start gap-3">
                       <span className="pl-1">•</span>
-                      <li className="pl-3">{item}</li>
-                    </div>
+                      {item.href ? (
+                        <a
+                          href={item.href}
+                          className="hover:text-white underline-offset-4 hover:underline transition-colors"
+                        >
+                          {item.text}
+                        </a>
+                      ) : (
+                        <span>{item.text}</span>
+                      )}
+                    </li>
                   ))}
                 </ul>
               </div>
